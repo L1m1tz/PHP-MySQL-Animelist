@@ -1,0 +1,11 @@
+DROP DATABASE IF EXISTS test;
+CREATE DATABASE test;
+
+  use test;
+
+CREATE TABLE employees (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    salary INT NOT NULL
+);
