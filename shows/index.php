@@ -1,6 +1,6 @@
 <?php
 // Include config file
-require_once "config.php";
+require_once "../config.php";
 
 // Attempt select query execution
 $sql = "SELECT *
@@ -66,8 +66,8 @@ $shows = $showStatement->fetchAll();
                       <td><?php echo $show['type_id'] ?></td>
                       
                       <td>
-                        <a href="seasons.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="update.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
+                        <a href="show_edit.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
                         <a href="delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
@@ -118,7 +118,7 @@ $shows = $showStatement->fetchAll();
                       <td><?php echo $season['release_date'] ?></td>
                       <td><?php echo $season['rating'] ?></td>
                       <td>
-                        <a href="seasons.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
+                        <a href="show_edit.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
                         <a href="update.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
                         <a href="delete.php?id=<?php echo $season['show_id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
