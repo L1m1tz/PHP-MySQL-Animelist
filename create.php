@@ -2,8 +2,18 @@
 // Include config file
 require_once "config.php";
 
+
+//call from database
 $stmt = $pdo->query("SELECT * FROM type");
 $types = $stmt->fetchAll();
+
+$stmt2 = $pdo->query("SELECT * FROM season_statuses");
+$season_statuses = $stmt2->fetchAll();
+
+$stmt3 = $pdo->query("SELECT * FROM genre");
+$genres = $stmt3->fetchAll();
+
+
 
 /**
  * Undocumented function
@@ -22,7 +32,7 @@ function checkIds(string $id, array $validAliasModel): bool
 }
 
 // Define variables and initialize with empty values
-$anime_name = $dub_name = $season_no = $description = $season_statuses = $release_date = $rating = $licensors = $link = $type = "";
+$anime_name = $dub_name = $season_no = $description  = $release_date = $rating = $licensors = $link = $type = "";
 $anime_name_err = $dub_name_err = $season_no_err = $description_err = $release_date_err = $season_statuses_err = $rating_err = $licensors_err = $link_err = $new_release_date_err = $type_err = "";
 
 // Processing form data when form is submitted
@@ -73,11 +83,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Validate season status
-    $input_season_statuses = isset($_POST["season_status"]) ? trim($_POST["season_status"]) : null;
-    if (empty($input_season_statuses)) {
-        $season_statuses_err = "Please enter Season Status.";
+
+    $input_season_status = isset($_POST["season_status"]) ? trim($_POST['season_status']) : null;
+    if (empty($input_season_status) && !checkIds($input_season_status, $season_statuses)) {
+        $season_statuses_err     = "Please select a valid type.";
     } else {
-        $season_statuses = $input_season_statuses;
+        $season_status = $input_season_status;
+    }
+
+
+    //Validate season genre
+    $input_genre = isset($_POST["genre"]) ? trim($_POST['genre']) : null;
+    if (empty($input_genre) && !checkIds($input_genre, $types)) {
+        $genre_err = "Please select a valid type.";
+    } else {
+        $genre = $input_genre;
     }
 
     // Validate release_date
@@ -128,7 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $param_season_no = $season_no;
         $param_description = $description;
         $param_release_date = $release_date;
-        $param_season_statuses = $season_statuses;
+        $param_season_status = $season_status;
         $param_rating = $rating;
         $param_licensors = $licensors;
         $param_link = $link;
@@ -154,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt2->bindParam(":dub_name", $param_dub_name);
             $stmt2->bindParam(":season_no", $param_season_no);
             $stmt2->bindParam(":description", $param_description);
-            $stmt2->bindParam(":season_status_id", $param_season_statuses);
+            $stmt2->bindParam(":season_status_id", $param_season_status);
             $stmt2->bindParam(":release_date", $param_release_date);
             $stmt2->bindParam(":rating", $param_rating);
             $stmt2->bindParam(":licensors", $param_licensors);
@@ -206,90 +226,96 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <!--Anime name-->
                             <label>Anime Title</label>
-                            <input type="text" name="anime_name" class="form-control <?php echo (!empty($anime_name_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $anime_name; ?>">
+                            <input type="text" name="anime_name" value="<?php echo $anime_name; ?>" class="form-control <?php echo (!empty($anime_name_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $anime_name_err; ?></span>
                         </div>
 
                         <!-- anime dub name-->
                         <div class="form-group">
                             <label>Anime Dub Title</label>
-                            <textarea name="dub_name" class="form-control <?php echo (!empty($dub_name_err)) ? 'is-invalid' : ''; ?>"><?php echo $dub_name; ?></textarea>
+                            <input type="text" name="dub_name" value="<?php echo $dub_name ?>" class="form-control <?php echo (!empty($dub_name_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $dub_name_err; ?></span>
                         </div>
 
                         <!-- Season number-->
                         <div class="form-group">
                             <label>Season Number</label>
-                            <textarea name="season_no" class="form-control <?php echo (!empty($season_no_err)) ? 'is-invalid' : ''; ?>"><?php echo $season_no; ?></textarea>
+                            <input type="number" name="season_no" value="<?php echo $season_no ?>" class="form-control <?php echo (!empty($season_no_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $season_no_err; ?></span>
                         </div>
 
                         <!--Details-->
                         <div class="form-group">
                             <label>Plot</label>
-                            <textarea type="text" name="description" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>"> <?php echo $description; ?></textarea>
+                            <textarea name="description" value="<?php echo $description; ?>" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>"></textarea>
                             <span class="invalid-feedback"><?php echo $description_err; ?></span>
                         </div>
 
                         <!--Anime Type-->
-                        <label>Anime Type</label>
-                        <select name="type" class="form-select" aria-label="Default select example">
-                            <option selected value="">Open this select menu</option>
-
-                            <?php foreach ($types as $type) : ?>
-                                <option value="<?= $type['id']; ?>"><?= $type['name']; ?></option>
-                            <?php endforeach; ?>
+                        <div class="form-group">
+                            <label>Anime Type</label>
+                            <select name="type" class="form-select" aria-label="Default select example">
 
 
-                        </select>
-
-                        <br>
+                                <?php foreach ($types as $type) : ?>
+                                    <option value="<?= $type['id']; ?>"><?= $type['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
                         <!--status-->
                         <div class="form-group">
                             <label>Status</label>
-                            <!--<textarea type="checkbox" name="season_status" class="form-control <?php echo (!empty($season_status_err)) ? 'is-invalid' : ''; ?>"><?php echo $season_status; ?></textarea>-->
-                            <input type="radio" name="season_status" <?php if (isset($season_status) && $season_status == "1") echo "checked"; ?> value="1"> Ongoing <br>
-                            <input type="radio" name="season_status" <?php if (isset($season_status) && $season_status == "2") echo "checked"; ?> value="2"> Complete
-                            <span class="invalid-feedback"><?php echo $season_status_err; ?></span>
+                            <select name="season_status" class="form-select" aria-label="Default select example">
+
+                                <?php foreach ($season_statuses as $season_status) : ?>
+                                    <option value="<?= $season_status['id']; ?>"><?= $season_status['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
+
 
                         <!--release date-->
                         <div class="form-group">
                             <label>Date</label>
-                            <input type="text" name="release_date" class="form-control <?php echo (!empty($release_date_err)) ? 'is-invalid' : ''; ?>"><?php echo $release_date; ?></textarea>
+                            <input type="date" placeholder="yyyy-mm-dd" name="release_date" class="form-control <?php echo (!empty($release_date_err)) ? 'is-invalid' : ''; ?>"><?php echo $release_date; ?></input>
                             <span class="invalid-feedback"><?php echo $release_date_err; ?></span>
                         </div>
 
-                        <!--
-                            <div class="form-group">
+                        <div class="form-group">
                             <label>Genre</label>
-                            <textarea name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></textarea>
+                            <select name="genre" class="form-select" aria-label="Default select example">
+
+                                <?php foreach ($genres as $genre) : ?>
+                                    <option value="<?= $genre['id']; ?>"><?= $genre['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
                             <span class="invalid-feedback"><?php echo $address_err; ?></span>
                         </div>
+                        <!--
                         <div class="form-group">
                             <label>Type</label>
-                            <textarea name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></textarea>
+                            <input name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></input>
                             <span class="invalid-feedback"><?php echo $address_err; ?></span>
                         </div> 
                         <div class="form-group">
                             <label>Episodes</label>
-                            <textarea name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></textarea>
+                            <input name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></input>
                             <span class="invalid-feedback"><?php echo $address_err; ?></span>
                         </div>-->
                         <div class="form-group">
                             <label>Rating</label>
-                            <input type="number" name="rating" class="form-control <?php echo (!empty($rating_err)) ? 'is-invalid' : ''; ?>"><?php echo $rating; ?></textarea>
+                            <input type="range" name="rating" value="<?php echo $rating; ?>" min="0" max="10" class="form-control <?php echo (!empty($rating_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $rating_err; ?></span>
                         </div>
                         <div class="form-group">
                             <label>Licensors</label>
-                            <textarea name="licensors" class="form-control <?php echo (!empty($licensorss_err)) ? 'is-invalid' : ''; ?>"><?php echo $licensors; ?></textarea>
+                            <input type="text" name="licensors" value="<?php echo $licensors; ?>" class="form-control <?php echo (!empty($licensorss_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $licensors_err; ?></span>
                         </div>
                         <div class="form-group">
                             <label>Website Link</label>
-                            <textarea name="link" class=" form-control <?php echo (!empty($link_err)) ? 'is-invalid' : ''; ?>"><?php echo $link; ?></textarea>
+                            <input type="url" name="link" value="<?php echo $link; ?>" class=" form-control <?php echo (!empty($link_err)) ? 'is-invalid' : ''; ?>">
                             <span class="invalid-feedback"><?php echo $link_err; ?></span>
                         </div>
 

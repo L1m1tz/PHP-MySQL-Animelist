@@ -5,11 +5,16 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
     require_once "config.php";
 
     // Prepare a select statement
-    $sql = "SELECT * FROM employees WHERE id = :id";
+    //$sql = "SELECT * FROM seasons WHERE id = :show_id";
+    $sql = "SELECT *,
+            seasons.id AS season_id
+            FROM seasons
+            JOIN anime_show on anime_show.id = seasons.show_id
+            WHERE seasons.id = :show_id" ;
 
     if ($stmt = $pdo->prepare($sql)) {
         // Bind variables to the prepared statement as parameters
-        $stmt->bindParam(":id", $param_id);
+        $stmt->bindParam(":show_id", $param_id);
 
         // Set parameters
         $param_id = trim($_GET["id"]);
@@ -22,9 +27,9 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 // Retrieve individual field value
-                $name = $row["name"];
-                $address = $row["address"];
-                $salary = $row["salary"];
+                $anime_name = $row["anime_name"];
+                $description = $row["description"];
+                $season_no = $row["season_no"];
             } else {
                 // URL doesn't contain valid id parameter. Redirect to error page
                 header("location: error.php");
@@ -70,15 +75,15 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                     <h1 class="mt-5 mb-3">View Record</h1>
                     <div class="form-group">
                         <label>Name</label>
-                        <p><b><?php echo $row["name"]; ?></b></p>
+                        <p><b><?php echo $row["anime_name"]; ?></b></p>
                     </div>
                     <div class="form-group">
                         <label>Address</label>
-                        <p><b><?php echo $row["address"]; ?></b></p>
+                        <p><b><?php echo $row["description"]; ?></b></p>
                     </div>
                     <div class="form-group">
                         <label>Salary</label>
-                        <p><b><?php echo $row["salary"]; ?></b></p>
+                        <p><b><?php echo $row["season_no"]; ?></b></p>
                     </div>
                     <p><a href="index.php" class="btn btn-primary">Back</a></p>
                 </div>

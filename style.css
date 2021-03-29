@@ -8,8 +8,24 @@ table {
   border-spacing: 0;
 }
 
-td,
 th {
   padding: 5px;
   border-bottom: 1px solid #aaa;
+  text-align: center;
+}
+
+.wrapper {
+  width: 600px;
+  margin: 0 auto;
+}
+
+table tr td:last-child {
+  width: 120px;
+}
+.table {
+  color: blue; 
+  border:1px solid black;
+  margin-left:auto;
+  margin-top: 100;
+  text-align: center!important;
 }

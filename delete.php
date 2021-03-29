@@ -5,7 +5,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     require_once "config.php";
 
     // Prepare a delete statement
-    $sql = "DELETE FROM employees WHERE id = :id";
+    $sql = "DELETE FROM anime_show WHERE id = :id";
 
     if ($stmt = $pdo->prepare($sql)) {
         // Bind variables to the prepared statement as parameters
@@ -46,6 +46,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     <meta charset="UTF-8">
     <title>Delete Record</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <style>
         .wrapper {
             width: 600px;
@@ -63,7 +64,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                         <div class="alert alert-danger">
                             <input type="hidden" name="id" value="<?php echo trim($_GET["id"]); ?>" />
-                            <p>Are you sure you want to delete this employee record?</p>
+                            <p>Are you sure you want to delete this anime record?</p>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
                                 <a href="index.php" class="btn btn-secondary ml-2">No</a>
