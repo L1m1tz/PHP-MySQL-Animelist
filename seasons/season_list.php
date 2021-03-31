@@ -1,16 +1,33 @@
 <?php
-// Include config file
-require_once "../config.php";
+// Check existence of id parameter before processing further
+if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
+  // Include config file
+  require_once "../config.php";
 
-// Attempt select query execution
-$sql = "SELECT *,
-            seasons.id AS season_id
-            FROM seasons
-            JOIN anime_show on anime_show.id = seasons.show_id";
+  // Set parameters
+  $param_id = trim($_GET["id"]);
 
-$seasonStatement = $pdo->query($sql);
+  // Prepare a select statement
+  $sql = "SELECT * FROM seasons WHERE show_id = :id";
 
-$seasons = $seasonStatement->fetchAll();
+  if ($stmt = $pdo->prepare($sql)) {
+    // Bind variables to the prepared statement as parameters
+    $stmt->bindParam(":id", $param_id);
+
+    $stmt->execute();
+    $seasons = $stmt->fetchAll();
+  }
+
+  // Close statement
+  unset($stmt);
+
+  // Close connection
+  unset($pdo);
+} else {
+  // URL doesn't contain id parameter. Redirect to error page
+  header("location: error.php");
+  exit();
+}
 ?>
 
 
@@ -55,7 +72,6 @@ $seasons = $seasonStatement->fetchAll();
                     <th>Plot</th>
                     <th>Season</th>
                     <th>Release Date</th>
-                    <th>Type</th>
                     <th>rating</th>
                     <th>Action</th>
                   </tr>
@@ -64,12 +80,11 @@ $seasons = $seasonStatement->fetchAll();
                   <?php
                   foreach ($seasons as $season) { ?>
                     <tr>
-                      <td><?php echo $season['show_id'] ?></td>
-                      <td><?php echo $season['anime_name'] ?></td>
+                      <td><?php echo $season['id'] ?></td>
+                      <td><?php echo $season['dub_name'] ?></td>
                       <td><?php echo $season['description'] ?></td>
                       <td><?php echo $season['season_no'] ?></td>
                       <td><?php echo $season['release_date'] ?></td>
-                      <td><?php echo $season['type_id'] ?></td>
                       <td><?php echo $season['rating'] ?></td>
                       <td>
                         <a href="../seasons/season_view.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="View Record" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
