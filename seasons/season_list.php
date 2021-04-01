@@ -24,6 +24,8 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
   // Close connection
   unset($pdo);
 } else {
+  var_dump($_GET);
+  exit;
   // URL doesn't contain id parameter. Redirect to error page
   header("location: error.php");
   exit();
@@ -58,7 +60,7 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
         <div class="col-md-12">
           <div class="mt-5 mb-3 clearfix">
             <h2 class="pull-left">Anime Seasons</h2>
-            <a href="create.php" class="btn btn-success pull-right"><i class="fa fa-plus"></i> Add New Season</a>
+            <a href="season_create.php?show_id=<?php echo $_GET['id'] ?>" class="btn btn-success pull-right"><i class="fa fa-plus"></i>Add New Season</a>
           </div>
           <?php
           if (!!$seasons) {
@@ -87,9 +89,9 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                       <td><?php echo $season['release_date'] ?></td>
                       <td><?php echo $season['rating'] ?></td>
                       <td>
-                        <a href="../seasons/season_view.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="View Record" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="update.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
-                        <a href="delete.php?id=<?php echo $season['show_id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
+                        <a href="../seasons/season_view.php?id=<?php echo $season['id'] ?>" class="mr-3" title="View Record" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
+                        <a href="season_create.php?season_id=<?php echo $season['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="delete.php?id=<?php echo $season['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
                   <?php } ?>
