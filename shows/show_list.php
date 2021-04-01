@@ -52,6 +52,7 @@ $shows = $showStatement->fetchAll();
                 <thead>
                   <tr>
                     <th>#</th>
+                    <th>DB ID</th>
                     <th>Anime Name</th>
                     <th>Anime Type</th>
                     <th>Action</th>
@@ -59,15 +60,18 @@ $shows = $showStatement->fetchAll();
                 </thead>
                 <tbody>
                   <?php
-                  foreach ($shows as $show) { ?>
+                  $count = 0;
+                  foreach ($shows as $show) {
+                    $count++; ?>
                     <tr>
+                      <td><?php echo $count ?></td>
                       <td><?php echo $show['id'] ?></td>
                       <td><?php echo $show['anime_name'] ?></td>
                       <td><?php echo $show['type_id'] ?></td>
 
                       <td>
                         <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="show_edit.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="show_create.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
                         <a href="show_delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
@@ -117,7 +121,7 @@ $shows = $showStatement->fetchAll();
 
                       <td>
                         <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="show_edit.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="show_create.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
                         <a href="show_delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>

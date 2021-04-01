@@ -7,11 +7,8 @@ require_once "../config.php";
 $stmt = $pdo->query("SELECT * FROM type");
 $types = $stmt->fetchAll();
 
-$stmt2 = $pdo->query("SELECT * FROM season_statuses");
-$season_statuses = $stmt2->fetchAll();
-
-$stmt3 = $pdo->query("SELECT * FROM genre");
-$genres = $stmt3->fetchAll();
+$stmt2 = $pdo->query("SELECT * FROM genre");
+$genres = $stmt2->fetchAll();
 
 
 
@@ -32,11 +29,41 @@ function checkIds(string $id, array $validAliasModel): bool
 }
 
 // Define variables and initialize with empty values
-$anime_name = $dub_name = $season_no = $description  = $release_date = $rating = $licensors = $link = $type = "";
-$anime_name_err = $dub_name_err = $season_no_err = $description_err = $release_date_err = $season_statuses_err = $rating_err = $licensors_err = $link_err = $new_release_date_err = $type_err = "";
+$anime_name = $type = $genre = "";
+$anime_name_err = $type_err = $genre = "";
+$edit = "false";
+$id = null;
+
+//Check if ID is set
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
+
+    $sql = "SELECT * FROM anime_show WHERE id = :id";
+
+    $param_id = $_GET['id'];
+
+    if ($stmt3 = $pdo->prepare($sql)) {
+        // Bind variables to the prepared statement as parameters
+        $stmt3->bindParam(":id", $param_id);
+    }
+
+    $stmt3->execute();
+    $show = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+    $anime_name = $show['anime_name'];
+    $type = $show['type_id'];
+    //  $genre = $show['genre'];
+
+
+    $edit = "true";
+    $id = $_GET['id'];
+}
+
 
 // Processing form data when form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $id = $_POST['id'];
+    $edit = $_POST['edit'];
 
     // Validate anime name
     $input_anime_name = trim($_POST["anime_name"]);
@@ -57,52 +84,79 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     //Validate season genre
-    $input_genre = isset($_POST["genre"]) ? trim($_POST['genre']) : null;
+    /* $input_genre = isset($_POST["genre"]) ? trim($_POST['genre']) : null;
     if (empty($input_genre) && !checkIds($input_genre, $types)) {
         $genre_err = "Please select a valid type.";
     } else {
         $genre = $input_genre;
-    }
+    }*/
+
 
 
     // Check input errors before inserting in database
     if (empty($anime_name_err) && empty($type_err) && empty($genre_err)) {
 
         // Set parameters
+        $param_id = $id;
         $param_anime_name = $anime_name;
-        $param_dub_genre = $genre;
         $param_type = $type;
+        //$param_genre = $genre;
 
-        // Prepare an insert statement
-        $sql = "INSERT INTO anime_show (anime_name, type_id) VALUES (:anime_name, :type_id)";
+        //check if its for updating
+        if ($_POST['edit'] === 'true') {
 
-        if ($stmt = $pdo->prepare($sql)) {
-            // Bind variables to the prepared statement as parameters
-            $stmt->bindParam(":anime_name", $param_anime_name);
-            $stmt->bindParam(":type_id", $param_type);
-        }
+            // Perform update sql query
+            $sql2 = 'UPDATE anime_show SET anime_name = :anime_name, type_id = :type_id WHERE id = :id ';
 
-        $showCreated = $stmt->execute();
-        
+            if ($stmt4 = $pdo->prepare($sql2)) {
 
-        // Attempt to execute the prepared statement
-        if ($showCreated) {
-            // Records created successfully. Redirect to landing page
-            header("location: show_list.php");
-            exit();
+                $stmt4->bindParam(":id", $param_id);
+                $stmt4->bindParam(":anime_name", $param_anime_name);
+                $stmt4->bindParam(":type_id", $param_type);
+            }
+            $showEdited = $stmt4->execute();
+
+            if ($showEdited) {
+                header('location: show_list.php');
+                exit();
+            } else {
+                echo "Oops! Something went wrong. Please try again later.";
+            }
         } else {
-            echo "Oops! Something went wrong. Please try again later.";
+
+
+            // Prepare an insert statement
+            $sql3 = "INSERT INTO anime_show (anime_name, type_id) VALUES (:anime_name, :type_id)";
+
+            if ($stmt5 = $pdo->prepare($sql3)) {
+                // Bind variables to the prepared statement as parameters
+                $stmt5->bindParam(":anime_name", $param_anime_name);
+                $stmt5->bindParam(":type_id", $param_type);
+            }
+
+            $showCreated = $stmt5->execute();
+
+            // Attempt to execute the prepared statement
+            if ($showCreated) {
+                // Records created successfully. Redirect to landing page
+                header("location: show_list.php");
+                exit();
+            } else {
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+
+
+            // Close statement
+            unset($stmt4);
+            unset($stmt5);
         }
-
-
-        // Close statement
-        unset($stmt);
-        unset($stmt2);
     }
 
     // Close connection
     unset($pdo);
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -132,32 +186,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <span class="invalid-feedback"><?php echo $anime_name_err; ?></span>
                         </div>
 
+
                         <!--Anime Type-->
                         <div class="form-group">
                             <label>Anime Type</label>
                             <select name="type" class="form-select" aria-label="Default select example">
-
-
-                                <?php foreach ($types as $type) : ?>
-                                    <option value="<?= $type['id']; ?>"><?= $type['name']; ?></option>
+                                <?php foreach ($types as $typeOption) : ?>
+                                    <option <?php if ($typeOption['id'] == $type) {
+                                                echo 'selected="selected"';
+                                            } ?> value="<?= $typeOption['id']; ?>">
+                                        <?= $typeOption['name']; ?>
+                                    </option>
                                 <?php endforeach; ?>
+
                             </select>
                         </div>
 
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Genre</label>
                             <select name="genre" class="form-select" aria-label="Default select example">
 
                                 <?php foreach ($genres as $genre) : ?>
-                                    <option value="<?= $genre['id']; ?>"><?= $genre['name']; ?></option>
+                                    <option value="<?= $genre['id']; ?>"><?= $genre['genre']; ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <span class="invalid-feedback"><?php echo $address_err; ?></span>
-                        </div>
-                        
+                        </div> -->
+
+                        <input name="id" style="display: none;" value="<?php echo $id ?>">
+                        <input name='edit' style="display: none;" value='<?php echo $edit ?>'>
+
                         <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="index.php" class="btn btn-secondary ml-2">Cancel</a>
+                        <a href="show_list.php" class="btn btn-secondary ml-2">Cancel</a>
                     </form>
                 </div>
             </div>
