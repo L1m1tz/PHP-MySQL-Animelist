@@ -24,8 +24,6 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
   // Close connection
   unset($pdo);
 } else {
-  var_dump($_GET);
-  exit;
   // URL doesn't contain id parameter. Redirect to error page
   header("location: error.php");
   exit();
@@ -91,7 +89,7 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                       <td>
                         <a href="../seasons/season_view.php?id=<?php echo $season['id'] ?>" class="mr-3" title="View Record" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
                         <a href="season_create.php?season_id=<?php echo $season['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
-                        <a href="delete.php?id=<?php echo $season['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
+                        <a href="season_delete.php?season_id=<?php echo $season['id'] ?>&show_id=<?php echo $season['show_id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
                   <?php } ?>

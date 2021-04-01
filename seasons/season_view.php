@@ -112,11 +112,11 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                         <label>link</label>
                         <p><b><a href="<?php echo $row["link"]; ?>"> <?php echo $row["link"]; ?></a></b></p>
                     </div>
-                    <p><a href="index.php" class="btn btn-primary">Back</a></p>
+
+                    <p><a href="http://animelist.test/seasons/season_list.php?id=<?php echo $_GET['id']?>" class="btn btn-primary">Back</a></p>
                 </div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>
