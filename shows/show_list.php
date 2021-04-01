@@ -1,6 +1,6 @@
 <?php
 // Include config file
-require_once "config.php";
+require_once "../config.php";
 
 // Attempt select query execution
 $sql = "SELECT *
@@ -37,11 +37,65 @@ $shows = $showStatement->fetchAll();
     <div class="container-fluid">
       <div class="row">
         <div class="col-12 text-center m-5">
-          <a href="create.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Anime</a>
+          <a href="show_create.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Anime</a>
         </div>
         <div class="col-md-12">
           <div class="mt-5 mb-3 clearfix">
             <h2 class="pull-left">Anime Details</h2>
+
+          </div>
+          <?php
+          if (!!$shows) {
+            if (count($shows) > 0) { ?>
+              <table class="table table-bordered table-striped table-hover">
+
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>DB ID</th>
+                    <th>Anime Name</th>
+                    <th>Anime Type</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  $count = 0;
+                  foreach ($shows as $show) {
+                    $count++; ?>
+                    <tr>
+                      <td><?php echo $count ?></td>
+                      <td><?php echo $show['id'] ?></td>
+                      <td><?php echo $show['anime_name'] ?></td>
+                      <td><?php echo $show['type_id'] ?></td>
+
+                      <td>
+                        <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
+                        <a href="show_create.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="show_delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
+                      </td>
+                    </tr>
+                  <?php } ?>
+                </tbody>
+              </table>
+            <?php } else { ?>
+              <div class="alert alert-danger"><em>No records were found.</em></div>
+            <?php }
+          } else { ?>
+            <div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div>
+          <?php }
+
+          // Close connection
+          unset($pdo);
+          ?>
+        </div>
+
+        <div class="col-12 text-center m-5">
+          <a href="show_create.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Anime</a>
+        </div>
+        <div class="col-md-12">
+          <div class="mt-5 mb-3 clearfix">
+            <h2 class="pull-left">Watched Anime</h2>
 
           </div>
           <?php
@@ -64,11 +118,11 @@ $shows = $showStatement->fetchAll();
                       <td><?php echo $show['id'] ?></td>
                       <td><?php echo $show['anime_name'] ?></td>
                       <td><?php echo $show['type_id'] ?></td>
-                      
+
                       <td>
-                        <a href="seasons.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="update.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
-                        <a href="delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
+                        <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
+                        <a href="show_create.php?id=<?php echo $show['id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
+                        <a href="show_delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
                   <?php } ?>
@@ -86,57 +140,6 @@ $shows = $showStatement->fetchAll();
           ?>
         </div>
 
-
-        <div class="col-md-12">
-          <div class="mt-5 mb-3 clearfix">
-            <h2 class="pull-left">Watched Anime</h2>
-          </div>
-          <?php
-          if (!!$seasons) {
-            if (count($seasons) > 0) { ?>
-              <table class="table table-bordered table-striped table-hover">
-
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Anime Name</th>
-                    <th>Dub Name</th>
-                    <th>Season</th>
-                    <th>Release Date</th>
-                    <th>rating</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  foreach ($seasons as $season) { ?>
-                    <tr>
-                      <td><?php echo $season['show_id'] ?></td>
-                      <td><?php echo $season['anime_name'] ?></td>
-                      <td><?php echo $season['dub_name'] ?></td>
-                      <td><?php echo $season['season_no'] ?></td>
-                      <td><?php echo $season['release_date'] ?></td>
-                      <td><?php echo $season['rating'] ?></td>
-                      <td>
-                        <a href="seasons.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
-                        <a href="update.php?id=<?php echo $season['show_id'] ?>" class="mr-3" title="Update Record" data-toggle="tooltip"><span class="fa fa-pencil"></span></a>
-                        <a href="delete.php?id=<?php echo $season['show_id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
-                      </td>
-                    </tr>
-                  <?php } ?>
-                </tbody>
-              </table>
-            <?php } else { ?>
-              <div class="alert alert-danger"><em>No records were found.</em></div>
-            <?php }
-          } else { ?>
-            <div class="alert alert-danger"><em>Oops! Something went wrong. Please try again later.</em></div>
-          <?php }
-
-          // Close connection
-          unset($pdo);
-          ?>
-        </div>
       </div>
     </div>
   </div>
