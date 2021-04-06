@@ -3,12 +3,18 @@
 require_once "../config.php";
 
 // Attempt select query execution
+$stmt = $pdo->query("SELECT * FROM type");
+$types = $stmt->fetchAll();
+
 $sql = "SELECT *
         FROM anime_show";
 
 $showStatement = $pdo->query($sql);
 
 $shows = $showStatement->fetchAll();
+
+//var_dump($shows['type_id']);
+
 ?>
 
 
@@ -61,13 +67,24 @@ $shows = $showStatement->fetchAll();
                 <tbody>
                   <?php
                   $count = 0;
+                  $loop = 0;
+
                   foreach ($shows as $show) {
-                    $count++; ?>
+                    $count++;
+
+
+                  ?>
                     <tr>
                       <td><?php echo $count ?></td>
                       <td><?php echo $show['id'] ?></td>
                       <td><?php echo $show['anime_name'] ?></td>
-                      <td><?php echo $show['type_id'] ?></td>
+                      <td><?php
+                          foreach ($types as $typeOption) {
+                            if ($typeOption['id'] == $show['type_id']) {
+                              $value =  $typeOption['name'];
+                              echo $value;
+                            }}
+                            ?></td>
 
                       <td>
                         <a href="../seasons/season_list.php?id=<?php echo $show['id'] ?>" class="mr-3" title="View Anime" data-toggle="tooltip"><span class="fa fa-eye"></span></a>
@@ -75,7 +92,8 @@ $shows = $showStatement->fetchAll();
                         <a href="show_delete.php?id=<?php echo $show['id'] ?>" title="Delete Record" data-toggle="tooltip"><span class="fa fa-trash"></span></a>
                       </td>
                     </tr>
-                  <?php } ?>
+                <?php 
+                        } ?>
                 </tbody>
               </table>
             <?php } else { ?>
