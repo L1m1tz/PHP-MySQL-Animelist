@@ -1,4 +1,6 @@
-DROP DATABASE IF EXISTS anime;
+<?php 
+
+$resetSql = 'DROP DATABASE IF EXISTS anime;
 CREATE DATABASE anime;
 use anime;
 CREATE TABLE season_statuses (
@@ -40,7 +42,7 @@ CREATE TABLE seasons (
     licensors VARCHAR(255),
     rating DOUBLE,
     link VARCHAR(255),
-    CONSTRAINT fk_anime_show_id FOREIGN KEY (show_id) REFERENCES anime_show(id),
+    CONSTRAINT fk_anime_show_id FOREIGN KEY (show_id) REFERENCES anime_show(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_season_status_id FOREIGN KEY (season_status_id) REFERENCES season_statuses(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 INSERT INTO season_statuses(alias, name)
@@ -87,4 +89,4 @@ VALUES (
         "Unknown",
         10,
         "gogoanime.movie"
-    )
+    )';
