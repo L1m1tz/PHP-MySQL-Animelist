@@ -1,6 +1,5 @@
 <?php
-// Include config file
-require_once "../config.php";
+
 
 //call from database
 $stmt1 = $pdo->query("SELECT * FROM season_statuses");
@@ -54,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $rating = $season['rating'];
         $licensors = $season['licensors'];
         $link = $season["link"];
-
         $season_id = $_GET['season_id'];
         $show_id = $season['show_id'];
     } elseif (isset($_GET['show_id'])) {
@@ -174,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $seasonEdited = $stmt->execute();
 
             if ($seasonEdited) {
-                header("location: http://animelist.test/seasons/season_list.php?id=$show_id");
+                header("location: http://animelist.test?page=season-list&id=$show_id");
             } else {
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -200,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Attempt to execute the prepared statement
             if ($seasonCreated) {
                 // Records created successfully. Redirect to landing page
-                header("location: http://animelist.test/seasons/season_list.php?id=$show_id");
+                header("location: http://animelist.test?page=season-list&id=$show_id");
             } else {
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -217,89 +215,77 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<div class="wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mt-5">Create Anime Record</h2>
+                <p>Please fill this form and submit to add anime record to the database.</p>
+                <form action="<?php echo htmlspecialchars('index.php?page=season-create'); ?>" method="post">
+                    <div class="form-group">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Create Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-</head>
 
-<body>
-    <div class="wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2 class="mt-5">Create Anime Record</h2>
-                    <p>Please fill this form and submit to add anime record to the database.</p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <!-- anime dub name-->
                         <div class="form-group">
+                            <label>Anime Dub Title</label>
+                            <input type="text" name="dub_name" value="<?php echo $dub_name ?>" class="form-control <?php echo (!empty($dub_name_err)) ? 'is-invalid' : ''; ?>">
+                            <span class="invalid-feedback"><?php echo $dub_name_err; ?></span>
+                        </div>
 
+                        <!-- Season number-->
+                        <div class="form-group">
+                            <label>Season Number</label>
+                            <input type="number" name="season_no" value="<?php echo $season_no ?>" class="form-control <?php echo (!empty($season_no_err)) ? 'is-invalid' : ''; ?>">
+                            <span class="invalid-feedback"><?php echo $season_no_err; ?></span>
+                        </div>
 
-                            <!-- anime dub name-->
-                            <div class="form-group">
-                                <label>Anime Dub Title</label>
-                                <input type="text" name="dub_name" value="<?php echo $dub_name ?>" class="form-control <?php echo (!empty($dub_name_err)) ? 'is-invalid' : ''; ?>">
-                                <span class="invalid-feedback"><?php echo $dub_name_err; ?></span>
-                            </div>
+                        <!--Details-->
+                        <div class="form-group">
+                            <label>Plot</label>
+                            <textarea name="description" value="<?php echo $description; ?>" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>"><?php echo $description; ?></textarea>
+                            <span class="invalid-feedback"><?php echo $description_err; ?></span>
+                        </div>
 
-                            <!-- Season number-->
-                            <div class="form-group">
-                                <label>Season Number</label>
-                                <input type="number" name="season_no" value="<?php echo $season_no ?>" class="form-control <?php echo (!empty($season_no_err)) ? 'is-invalid' : ''; ?>">
-                                <span class="invalid-feedback"><?php echo $season_no_err; ?></span>
-                            </div>
+                        <!--status-->
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="season_status" class="form-select" aria-label="Default select example">
 
-                            <!--Details-->
-                            <div class="form-group">
-                                <label>Plot</label>
-                                <textarea name="description" value="<?php echo $description; ?>" class="form-control <?php echo (!empty($description_err)) ? 'is-invalid' : ''; ?>"><?php echo $description; ?></textarea>
-                                <span class="invalid-feedback"><?php echo $description_err; ?></span>
-                            </div>
+                                <?php foreach ($season_statuses as $season_status) : ?>
+                                    <option value="<?= $season_status['id']; ?>"><?= $season_status['name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-                            <!--status-->
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select name="season_status" class="form-select" aria-label="Default select example">
+                        <!--release date-->
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" placeholder="yyyy-mm-dd" name="release_date" class="form-control <?php echo (!empty($release_date_err)) ? 'is-invalid' : ''; ?>"><?php echo $release_date; ?></input>
+                            <span class="invalid-feedback"><?php echo $release_date_err; ?></span>
+                        </div>
 
-                                    <?php foreach ($season_statuses as $season_status) : ?>
-                                        <option value="<?= $season_status['id']; ?>"><?= $season_status['name']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                        <!-- rating -->
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <input type="range" name="rating" value="<?php echo $rating; ?>" min="0" max="10" class="form-range <?php echo (!empty($rating_err)) ? 'is-invalid' : ''; ?>">
+                            <span class="invalid-feedback"><?php echo $rating_err; ?></span>
+                        </div>
 
-                            <!--release date-->
-                            <div class="form-group">
-                                <label>Date</label>
-                                <input type="date" placeholder="yyyy-mm-dd" name="release_date" class="form-control <?php echo (!empty($release_date_err)) ? 'is-invalid' : ''; ?>"><?php echo $release_date; ?></input>
-                                <span class="invalid-feedback"><?php echo $release_date_err; ?></span>
-                            </div>
+                        <!-- Licensors -->
+                        <div class="form-group">
+                            <label>Licensors</label>
+                            <input type="text" name="licensors" value="<?php echo $licensors; ?>" class="form-control <?php echo (!empty($licensorss_err)) ? 'is-invalid' : ''; ?>">
+                            <span class="invalid-feedback"><?php echo $licensors_err; ?></span>
+                        </div>
 
-                            <!-- rating -->
-                            <div class="form-group">
-                                <label>Rating</label>
-                                <input type="range" name="rating" value="<?php echo $rating; ?>" min="0" max="10" class="form-range <?php echo (!empty($rating_err)) ? 'is-invalid' : ''; ?>">
-                                <span class="invalid-feedback"><?php echo $rating_err; ?></span>
-                            </div>
+                        <!-- Website Link -->
+                        <div class="form-group">
+                            <label>Website Link</label>
+                            <input type="url" name="link" value="<?php echo $link; ?>" class=" form-control <?php echo (!empty($link_err)) ? 'is-invalid' : ''; ?>">
+                            <span class="invalid-feedback"><?php echo $link_err; ?></span>
+                        </div>
 
-                            <!-- Licensors -->
-                            <div class="form-group">
-                                <label>Licensors</label>
-                                <input type="text" name="licensors" value="<?php echo $licensors; ?>" class="form-control <?php echo (!empty($licensorss_err)) ? 'is-invalid' : ''; ?>">
-                                <span class="invalid-feedback"><?php echo $licensors_err; ?></span>
-                            </div>
-
-                            <!-- Website Link -->
-                            <div class="form-group">
-                                <label>Website Link</label>
-                                <input type="url" name="link" value="<?php echo $link; ?>" class=" form-control <?php echo (!empty($link_err)) ? 'is-invalid' : ''; ?>">
-                                <span class="invalid-feedback"><?php echo $link_err; ?></span>
-                            </div>
-
-                            <!--
+                        <!--
                         <div class="form-group">
                             <label>Type</label>
                             <input name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></input>
@@ -310,16 +296,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <input name="address" class="form-control <?php echo (!empty($address_err)) ? 'is-invalid' : ''; ?>"><?php echo $address; ?></input>
                             <span class="invalid-feedback"><?php echo $address_err; ?></span>
                         </div>-->
-                            <input name="show_id" style="display: none;" value="<?php echo $show_id ?>">
-                            <input name="season_id" style="display: none;" value="<?php echo $season_id ?>">
+                        <input name="show_id" style="display: none;" value="<?php echo $show_id ?>">
+                        <input name="season_id" style="display: none;" value="<?php echo $season_id ?>">
 
-                            <input type="submit" class="btn btn-primary" value="Submit">
-                            <a href="season_list.php" class="btn btn-secondary ml-2">Cancel</a>
-                    </form>
-                </div>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <a href="index.php?season-list" class="btn btn-secondary ml-2">Cancel</a>
+                </form>
             </div>
         </div>
     </div>
-</body>
-
-</html>
+</div>

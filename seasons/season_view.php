@@ -1,10 +1,16 @@
 <?php
 // Check existence of id parameter before processing further
 if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
-    // Include config file
-    require_once "../config.php";
+
 
     // Prepare a select statement
+    $stmt1 = $pdo->query("SELECT * FROM season_statuses");
+    $season_statuses = $stmt1->fetchAll();
+
+    $stmt = $pdo->query("SELECT * FROM type");
+    $types = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    
     $sql = "SELECT *,
             seasons.id AS season_id
             FROM seasons
@@ -50,73 +56,66 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>View Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .wrapper {
-            width: 600px;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-
 <body>
     <div class="wrapper">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
                     <h1 class="mt-5 mb-3"><u>View Record</u></h1>
+                    <p><a href="index.php?page=season-list&id=<?php echo $_GET['id'] ?>" class="btn btn-primary">Back</a></p>
+                    <hr>
+                    <div class="row justify-content-center">
 
-                    <div class="form-group">
-                        <h3>Anime Name</h3>
-                        <p><b><?php echo $row["anime_name"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>English Name</label>
-                        <p><b><?php echo $row["dub_name"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Season Number</label>
-                        <p><b><?php echo $row["season_no"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Season Plot</label>
-                        <p><b><?php echo $row["description"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Season Status</label>
-                        <p><b><?php echo $row["season_status_id"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Release Date</label>
-                        <p><b><?php echo $row["release_date"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Anime Type</label>
-                        <p><b><?php echo $row["type_id"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Licensors</label>
-                        <p><b><?php echo $row["licensors"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>Rating</label>
-                        <p><b><?php echo $row["rating"]; ?></b></p>
-                    </div>
-                    <div class="form-group">
-                        <label>link</label>
-                        <p><b><a href="<?php echo $row["link"]; ?>"> <?php echo $row["link"]; ?></a></b></p>
-                    </div>
+                        <div class="col-6">
+                            <h3>Anime Name</h3>
+                            <p><b><?php echo $row["anime_name"]; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>English Name</label>
+                            <p><b><?php echo $row["dub_name"]; ?></b></p>
+                        </div>
+                        <div class="col-12">
+                            <label>Season Number</label>
+                            <p><b><?php echo $row["season_no"]; ?></b></p>
+                        </div>
+                        <div class="col-12">
+                            <label>Season Plot</label>
+                            <p><b><?php echo $row["description"]; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Release Date</label>
+                            <p><b><?php echo $row["release_date"]; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Season Status</label>
+                            <p><b><?php if ($row["season_status_id"] == 1) {
+                                        echo "Ongoing";
+                                    } else {
+                                        echo "Complete";
+                                    }; ?></b></p>
+                        </div>
 
-                    <p><a href="http://animelist.test/seasons/season_list.php?id=<?php echo $_GET['id']?>" class="btn btn-primary">Back</a></p>
+                        <div class="col-6">
+                            <label>Anime Type</label>
+                            <p><b><?php 
+                                
+                            echo $types[$row["type_id"]-1]['name']; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Licensors</label>
+                            <p><b><?php echo $row["licensors"]; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Rating</label>
+                            <p><b><?php echo $row["rating"]; ?></b></p>
+                        </div>
+                        <div class="col-6">
+                            <label>link</label>
+                            <p><b><a href="<?php echo $row["link"]; ?>"> <?php echo $row["link"]; ?></a></b></p>
+                        </div>
+
+                        <p><a href="index.php?page=season-list&id=<?php echo $_GET['id'] ?>" class="btn btn-primary">Back</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-</body>
-
-</html>
